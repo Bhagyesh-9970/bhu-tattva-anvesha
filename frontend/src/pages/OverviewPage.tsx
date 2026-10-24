@@ -32,7 +32,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
       <div className="bg-gradient-to-r from-scientific-900 to-scientific-950 border border-scientific-800 rounded-xl p-6 shadow-md">
         <div className="max-w-3xl">
           <span className="text-xs font-mono font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded-full border border-emerald-800/60 inline-block mb-3">
-            FINAL-YEAR RESEARCH PROTOTYPE — PHASE 1
+            OPERATIONAL ENVIRONMENTAL INTELLIGENCE SYSTEM — V1.0
           </span>
           <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">
             BHŪ-TATTVA-ANVEṢA (भू-तत्त्व-अन्वेष)

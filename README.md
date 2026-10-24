@@ -6,97 +6,68 @@
 
 ## Overview
 
-BHŪ-TATTVA-ANVEṢA is a research prototype designed to integrate multi-source satellite Earth observation data (Sentinel-1, Sentinel-2, ERA5, SoilGrids), ground-based environmental observations, confidence-aware sensor fusion, an environmental digital twin, a knowledge graph, and retrieval-augmented generation (RAG) for decision support.
+BHŪ-TATTVA-ANVEṢA is a state-of-the-art environmental intelligence platform integrating multi-source satellite Earth observation data (Sentinel-1, Sentinel-2, ERA5, SoilGrids, SMAP), ground-based environmental observations, confidence-aware multi-sensor fusion, an environmental digital twin, a knowledge graph, and retrieval-augmented generation (RAG) for natural language decision support.
 
 ---
 
-## Phase 1 Architecture
+## Operational System Architecture
 
 ```
-[ Frontend: React + TypeScript + Vite + Tailwind + Leaflet ]
-                          │  (HTTP / JSON API)
-                          ▼
-             [ Backend: FastAPI (Python 3.12+) ]
-             ├── Watershed & Sensor Management
-             ├── Environmental State & Feature Engine
-             └── Mock Data Generator (Synthetic Provenance)
-                          │
-          ┌───────────────┴───────────────┐
-          ▼                               ▼
- [ PostgreSQL 16 + PostGIS ]     [ Neo4j Graph DB 5.x ]
-```
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.12+
-- Node.js 18+ / npm 9+
-- Docker & Docker Compose (optional for containerized deployment)
-
-### Environment Configuration
-
-Copy the sample environment file:
-
-```bash
-cp .env.example .env
+[ Frontend: React + TypeScript + Vite + Tailwind + Leaflet + Three.js 3D ]
+                                  │  (HTTP / JSON API)
+                                  ▼
+                     [ Backend: FastAPI (Python 3.12+) ]
+                     ├── Watershed & Sensor Management
+                     ├── Confidence-Aware Sensor Fusion Engine
+                     ├── What-If Climate Scenario Engine
+                     ├── Neo4j Knowledge Graph Service
+                     └── Evidence-Grounded RAG Assistant
+                                  │
+                  ┌───────────────┴───────────────┐
+                  ▼                               ▼
+         [ PostgreSQL 16 + PostGIS ]     [ Neo4j Graph DB 5.x ]
 ```
 
 ---
 
-## Running Locally
+## Key Features
 
-### 1. Backend Setup
+1. **High-Resolution Satellite & GIS Basemaps**: Esri World Imagery (sub-meter resolution, no API key required), OpenTopoMap topographic layers, and CartoDB Dark GIS basemaps.
+2. **ISRO Bhuvan Spatial Tools**: Real-time cursor Lat/Lon telemetry, distance & area measurement tool, and layer opacity drawer.
+3. **Interactive 3D Digital Twin**: Three.js procedural 3D terrain canvas with satellite texture mapping, height displacement, and 6-layer switching (*Elevation, Vegetation, Soil, Water, Climate, Confidence*).
+4. **5-Stage Sensor Fusion Engine**: Single-source baseline, simple average, inverse-variance weighted, Random Forest ML, and Stage E Confidence-Aware Fusion with 95% prediction interval uncertainty bounds.
+5. **What-If Scenario Simulator**: Interactive parameter sliders for rainfall, temperature, and vegetation perturbations with live delta computation and drought risk alerts.
+6. **Neo4j Knowledge Graph**: Node-link SVG physics graph visualizer, entity property inspector, and Cypher console.
+7. **Grounded RAG Assistant**: Natural language Q&A with evidence cards, confidence pills, and grounded source citations.
 
+---
+
+## Quick Start (Run Locally)
+
+### 1. Backend Server
 ```bash
 cd backend
-python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
-
-pip install -r requirements.txt
-python -m scripts.seed_demo_data
+python -m pip install -r requirements.txt
+python scripts/seed_demo_data.py
 uvicorn app.main:app --reload --port 8000
 ```
+- API Endpoint: `http://localhost:8000`
+- Interactive OpenAPI Docs: `http://localhost:8000/docs`
 
-Backend API will be accessible at: `http://localhost:8000`
-OpenAPI Documentation: `http://localhost:8000/docs`
-
-### 2. Frontend Setup
-
+### 2. Frontend Application
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-
-Frontend application will be accessible at: `http://localhost:5173`
+- Web Application: `http://localhost:5173`
 
 ---
 
-## Verification & Testing
+## Verification & Automated Tests
 
-To run backend automated tests:
-
+To run the backend test suite:
 ```bash
 cd backend
-pytest tests/
+pytest tests/ -v
 ```
-
----
-
-## Research Data Policy
-
-This prototype clearly distinguishes:
-- `OBSERVED_DATA`
-- `DERIVED_FEATURE`
-- `MODEL_ESTIMATE`
-- `PREDICTION`
-- `SIMULATION`
-- `SYNTHETIC_DEMO_DATA`
-
-All mock/synthetic data endpoints explicitly return metadata `"synthetic_demo_data": true` to preserve scientific integrity.

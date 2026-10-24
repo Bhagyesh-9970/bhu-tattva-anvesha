@@ -4,7 +4,51 @@
 
 @layer base {
   body {
-    @apply bg-scientific-950 text-scientific-100 font-sans;
+    @apply bg-scientific-950 text-scientific-100 font-sans transition-colors duration-200;
+  }
+
+  html.light body {
+    background-color: #f0f4f8;
+    color: #102a43;
+  }
+
+  html.light header,
+  html.light aside {
+    background-color: #ffffff;
+    border-color: #d9e2ec;
+    color: #102a43;
+  }
+
+  html.light main {
+    background-color: #f8fafc;
+    color: #102a43;
+  }
+
+  html.light .bg-scientific-900 {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+    color: #1e293b;
+  }
+
+  html.light .bg-scientific-950 {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+
+  html.light .bg-scientific-800 {
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #1e293b;
+  }
+
+  html.light .text-white {
+    color: #0f172a !important;
+  }
+
+  html.light .text-scientific-300,
+  html.light .text-scientific-400 {
+    color: #475569 !important;
   }
 }
 

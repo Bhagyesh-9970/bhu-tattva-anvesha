@@ -9,10 +9,14 @@ from app.api.v1.digital_twin import router as digital_twin_router
 from app.api.v1.scenarios import router as scenarios_router
 from app.api.v1.knowledge_graph import router as kg_router
 from app.api.v1.rag import router as rag_router
+from app.api.v1.auth import router as auth_router
+from app.api.v1.admin import router as admin_router
 
 api_router = APIRouter()
 
 api_router.include_router(health_router, prefix="", tags=["Health"])
+api_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+api_router.include_router(admin_router, prefix="/admin", tags=["Admin Portal"])
 api_router.include_router(watersheds_router, prefix="/watersheds", tags=["Watersheds"])
 api_router.include_router(sensors_router, prefix="/sensors", tags=["Sensors"])
 api_router.include_router(observations_router, prefix="/observations", tags=["Observations"])

@@ -2,7 +2,8 @@ import sys
 import logging
 from datetime import datetime, timedelta
 from app.core.database import engine, Base, SessionLocal
-from app.models import Watershed, Sensor, GroundObservation, EnvironmentalState
+from app.models import Watershed, Sensor, GroundObservation, EnvironmentalState, User
+from app.core.security import hash_password
 from app.services.mock_data_generator import (
     get_demo_watershed_data,
     get_demo_sensors_data,
@@ -19,6 +20,31 @@ def seed_database():
 
     db = SessionLocal()
     try:
+        # 0. Seed Users (Admin & User)
+        admin_user = db.query(User).filter_by(username="admin").first()
+        if not admin_user:
+            admin_user = User(
+                username="admin",
+                email="admin@bhu-tattva.gov.in",
+                hashed_password=hash_password("admin123"),
+                role="ADMIN"
+            )
+            db.add(admin_user)
+            logger.info("Seeded Admin user (admin / admin123)")
+
+        normal_user = db.query(User).filter_by(username="user").first()
+        if not normal_user:
+            normal_user = User(
+                username="user",
+                email="user@bhu-tattva.gov.in",
+                hashed_password=hash_password("user123"),
+                role="USER"
+            )
+            db.add(normal_user)
+            logger.info("Seeded Standard User (user / user123)")
+        
+        db.commit()
+
         # 1. Watershed seeding
         existing_watershed = db.query(Watershed).filter_by(code="KABINI-SUBBASIN-01").first()
         if not existing_watershed:

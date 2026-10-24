@@ -1,12 +1,15 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { AuthProvider } from './context/AuthContext';
 import { Layout } from './components/layout/Layout';
 import { OverviewPage } from './pages/OverviewPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { MapPage } from './pages/MapPage';
 import { DataSourcesPage } from './pages/DataSourcesPage';
 import { ResearchPage } from './pages/ResearchPage';
+import { LoginPage } from './pages/LoginPage';
+import { AdminPanelPage } from './pages/AdminPanelPage';
 import { FusionVisualizer } from './components/fusion/FusionVisualizer';
 import { DigitalTwin3DCanvas } from './components/digital_twin/DigitalTwin3DCanvas';
 import { ScenarioSimulator } from './components/scenarios/ScenarioSimulator';
@@ -67,6 +70,8 @@ const MainRoutes: React.FC = () => {
         <Route path="/assistant" element={<AIChatInterface />} />
         <Route path="/data-sources" element={<DataSourcesPage />} />
         <Route path="/research" element={<ResearchPage />} />
+        <Route path="/admin" element={<AdminPanelPage />} />
+        <Route path="/login" element={<LoginPage />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -77,9 +82,11 @@ const MainRoutes: React.FC = () => {
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <MainRoutes />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <MainRoutes />
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
