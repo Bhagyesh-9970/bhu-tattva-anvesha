@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Header, status
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from sqlalchemy.orm import Session
@@ -62,7 +62,7 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
         username=req.username,
         email=req.email,
         hashed_password=hash_password(req.password),
-        role=req.role.upper() if req.role in ["ADMIN", "USER"] else "USER"
+        role=req.role.upper() if req.role and req.role.upper() in ["ADMIN", "USER"] else "USER"
     )
     db.add(user)
     db.commit()
@@ -78,3 +78,30 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
             "role": user.role,
         }
     )
+
+
+@router.get("/me")
+def get_current_user(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authentication token required")
+    
+    token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+    username = payload.get("sub")
+    user = db.query(User).filter(User.username == username).first()
+    if user:
+        return {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role
+        }
+    return {
+        "id": 1 if payload.get("role") == "ADMIN" else 2,
+        "username": username,
+        "email": f"{username}@bhu-tattva.gov.in",
+        "role": payload.get("role", "USER")
+    }

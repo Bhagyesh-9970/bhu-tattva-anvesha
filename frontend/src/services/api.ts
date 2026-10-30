@@ -1,4 +1,4 @@
-import { Watershed, Sensor, EnvironmentalState, HealthStatus } from '../types';
+import { Watershed, Sensor, EnvironmentalState, HealthStatus, SelectedAreaMetrics, KnownZone } from '../types';
 
 const API_BASE_URL = '/api/v1';
 
@@ -29,5 +29,31 @@ export async function fetchEnvironmentalStates(watershedId?: number, days: numbe
     : `${API_BASE_URL}/environmental-state?days=${days}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch environmental state');
+  return res.json();
+}
+
+export async function queryAreaMetrics(params: {
+  watershedId?: number;
+  bbox?: number[];
+  zoneId?: string;
+  days?: number;
+}): Promise<SelectedAreaMetrics> {
+  const res = await fetch(`${API_BASE_URL}/environmental-state/query-area`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      watershed_id: params.watershedId || 1,
+      bbox: params.bbox,
+      zone_id: params.zoneId,
+      days: params.days || 14,
+    }),
+  });
+  if (!res.ok) throw new Error('Failed to query area metrics');
+  return res.json();
+}
+
+export async function fetchKnownZones(): Promise<KnownZone[]> {
+  const res = await fetch(`${API_BASE_URL}/environmental-state/zones`);
+  if (!res.ok) throw new Error('Failed to fetch zones');
   return res.json();
 }

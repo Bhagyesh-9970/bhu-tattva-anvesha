@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { AreaProvider } from './context/AreaContext';
 import { Layout } from './components/layout/Layout';
 import { OverviewPage } from './pages/OverviewPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -15,6 +16,7 @@ import { DigitalTwin3DCanvas } from './components/digital_twin/DigitalTwin3DCanv
 import { ScenarioSimulator } from './components/scenarios/ScenarioSimulator';
 import { GraphExplorer } from './components/knowledge_graph/GraphExplorer';
 import { AIChatInterface } from './components/assistant/AIChatInterface';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { fetchHealth, fetchWatersheds, fetchSensors, fetchEnvironmentalStates } from './services/api';
 
 const queryClient = new QueryClient({
@@ -46,36 +48,57 @@ const MainRoutes: React.FC = () => {
   const latestState = states && states.length > 0 ? states[0] : undefined;
 
   return (
-    <Layout health={health} activeWatershed={activeWatershed}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <OverviewPage
-              watershed={activeWatershed}
-              sensors={sensors || []}
-              latestState={latestState}
-            />
-          }
-        />
-        <Route path="/dashboard" element={<DashboardPage states={states || []} />} />
-        <Route
-          path="/map"
-          element={<MapPage watershed={activeWatershed} sensors={sensors || []} />}
-        />
-        <Route path="/fusion" element={<FusionVisualizer />} />
-        <Route path="/digital-twin" element={<DigitalTwin3DCanvas height="600px" />} />
-        <Route path="/scenarios" element={<ScenarioSimulator />} />
-        <Route path="/knowledge-graph" element={<GraphExplorer />} />
-        <Route path="/assistant" element={<AIChatInterface />} />
-        <Route path="/data-sources" element={<DataSourcesPage />} />
-        <Route path="/research" element={<ResearchPage />} />
-        <Route path="/admin" element={<AdminPanelPage />} />
-        <Route path="/login" element={<LoginPage />} />
+    <Routes>
+      {/* Public Login / Register Route */}
+      <Route path="/login" element={<LoginPage />} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Layout>
+      {/* Protected Routes inside App Layout */}
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <Layout health={health} activeWatershed={activeWatershed}>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <OverviewPage
+                      watershed={activeWatershed}
+                      sensors={sensors || []}
+                      latestState={latestState}
+                    />
+                  }
+                />
+                <Route path="/dashboard" element={<DashboardPage states={states || []} />} />
+                <Route
+                  path="/map"
+                  element={<MapPage watershed={activeWatershed} sensors={sensors || []} />}
+                />
+                <Route path="/fusion" element={<FusionVisualizer />} />
+                <Route path="/digital-twin" element={<DigitalTwin3DCanvas height="600px" />} />
+                <Route path="/scenarios" element={<ScenarioSimulator />} />
+                <Route path="/knowledge-graph" element={<GraphExplorer />} />
+                <Route path="/assistant" element={<AIChatInterface />} />
+                <Route path="/data-sources" element={<DataSourcesPage />} />
+                <Route path="/research" element={<ResearchPage />} />
+                
+                {/* Dedicated Admin Dashboard Route - restricted to ADMIN */}
+                <Route 
+                  path="/admin" 
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <AdminPanelPage />
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 };
 
@@ -83,9 +106,11 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <MainRoutes />
-        </BrowserRouter>
+        <AreaProvider>
+          <BrowserRouter>
+            <MainRoutes />
+          </BrowserRouter>
+        </AreaProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

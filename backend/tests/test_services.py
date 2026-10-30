@@ -3,6 +3,7 @@ from app.services.scenarios.scenario_engine import ScenarioEngine
 from app.services.digital_twin.twin_service import DigitalTwinService
 from app.services.knowledge_graph.graph_service import KnowledgeGraphService
 from app.services.rag.assistant_service import RAGAssistantService
+from app.services.spatial_area_service import query_land_area_metrics, calculate_area_from_bbox
 
 
 def test_fusion_stage_e():
@@ -42,3 +43,20 @@ def test_rag_assistant_grounded_answer():
     res2 = RAGAssistantService.process_query("What is the capital of Mars?", watershed_id=1)
     assert "sufficient evidence" in res2["answer"]
     assert res2["confidence_score"] == 0.0
+
+
+def test_spatial_area_query():
+    # Test zone query
+    zone_res = query_land_area_metrics(watershed_id=1, zone_id="hd_kote_agroforestry")
+    assert zone_res["area_sqkm"] == 420.0
+    assert zone_res["soil_moisture"] > 0
+    assert zone_res["ndvi"] > 0
+    assert len(zone_res["time_series"]) == 14
+
+    # Test custom bounding box
+    bbox = [76.10, 11.80, 76.25, 11.95]
+    bbox_res = query_land_area_metrics(watershed_id=1, bbox=bbox)
+    assert bbox_res["area_sqkm"] > 0
+    assert "Custom Parcel" in bbox_res["zone_name"]
+    assert bbox_res["active_sensors_count"] >= 1
+

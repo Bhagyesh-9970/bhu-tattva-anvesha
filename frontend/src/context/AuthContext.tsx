@@ -15,6 +15,7 @@ interface AuthContextType {
   logout: () => void;
   toggleTheme: () => void;
   isAdmin: boolean;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,11 +23,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
     const savedUser = localStorage.getItem('bhu_tattva_user');
-    return savedUser ? JSON.parse(savedUser) : { id: 1, username: 'admin', email: 'admin@bhu-tattva.gov.in', role: 'ADMIN' };
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('bhu_tattva_token') || 'demo_admin_jwt_token';
+    return localStorage.getItem('bhu_tattva_token') || null;
   });
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -61,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = user?.role === 'ADMIN';
+  const isAuthenticated = !!user && !!token;
 
   return (
     <AuthContext.Provider
@@ -72,6 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         toggleTheme,
         isAdmin,
+        isAuthenticated,
       }}
     >
       {children}

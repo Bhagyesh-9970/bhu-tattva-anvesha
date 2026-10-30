@@ -65,3 +65,48 @@ export interface HealthStatus {
   grid_resolution: number;
   timestamp: string;
 }
+
+export interface AreaTimeSeriesItem {
+  timestamp: string;
+  date: string;
+  soil_moisture: number;
+  ndvi: number;
+  temperature_c: number;
+  precipitation_mm: number;
+  confidence: number;
+}
+
+export interface SelectedAreaMetrics {
+  zone_id?: string;
+  zone_name: string;
+  area_sqkm: number;
+  area_ha: number;
+  bbox?: number[];
+  center_lat: number;
+  center_lon: number;
+  soil_moisture: number;
+  ndvi: number;
+  evi: number;
+  ndwi: number;
+  temperature_c: number;
+  precipitation_mm: number;
+  soil_ph: number;
+  soil_organic_carbon: number;
+  sand_fraction_pct: number;
+  clay_fraction_pct: number;
+  active_sensors_count: number;
+  overall_confidence: number;
+  uncertainty_score: number;
+  drought_risk: 'LOW' | 'MODERATE' | 'HIGH' | 'NONE';
+  vegetation_stress: 'HEALTHY' | 'MODERATE' | 'CRITICAL' | 'STRESSED' | 'VIGOROUS' | 'EXCELLENT';
+  land_cover_type: string;
+  time_series: AreaTimeSeriesItem[];
+  provenance: Record<string, any>;
+}
+
+export interface KnownZone {
+  id: string;
+  name: string;
+  area_sqkm: number;
+  centroid: [number, number];
+}
